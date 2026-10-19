@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Palma viva · Painel interativo</title>
+    <style>
+      :root {
+        --bg: #fff3dc;
+        --sf: #fffdf7;
+        --ink: #231d2e;
+        --mu: #5d5670;
+        --ac: #4b3bb5;
+        --hot: #e4572e;
+        --gold: #f2b134;
+        --tl: #14907a;
+        --sh: #231d2e;
+        color-scheme: light;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #16131f;
+          --sf: #221d33;
+          --ink: #f3eefc;
+          --mu: #b0a8c6;
+          --ac: #a99bff;
+          --hot: #ff7a59;
+          --gold: #ffc857;
+          --tl: #3ed3b0;
+          --sh: #000;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #16131f;
+        --sf: #221d33;
+        --ink: #f3eefc;
+        --mu: #b0a8c6;
+        --ac: #a99bff;
+        --hot: #ff7a59;
+        --gold: #ffc857;
+        --tl: #3ed3b0;
+        --sh: #000;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          17px/1.55 "Trebuchet MS",
+          system-ui,
+          sans-serif;
+        padding: 20px 16px 40px;
+      }
+      .w {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: clamp(40px, 10vw, 64px);
+        margin: 0;
+        line-height: 1;
+      }
+      h1 i {
+        color: var(--hot);
+        font-style: normal;
+      }
+      .sub {
+        color: var(--mu);
+        margin: 6px 0 16px;
+      }
+      .bd {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .bd span {
+        border: 2px solid var(--ink);
+        border-radius: 99px;
+        padding: 3px 12px;
+        font-size: 14px;
+        font-weight: 700;
+        background: var(--sf);
+      }
+      .bd span.off {
+        opacity: 0.45;
+        filter: grayscale(1);
+        border-style: dashed;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .b {
+        font:
+          700 15px "Trebuchet MS",
+          system-ui,
+          sans-serif;
+        border: 2px solid var(--ink);
+        background: var(--gold);
+        color: #231d2e;
+        border-radius: 12px;
+        padding: 9px 16px;
+        box-shadow: 3px 3px 0 var(--sh);
+        cursor: pointer;
+      }
+      .b:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 var(--sh);
+      }
+      .tabs .b {
+        background: var(--sf);
+        color: var(--ink);
+      }
+      .tabs .b[aria-selected="true"] {
+        background: var(--ac);
+        color: var(--bg);
+      }
+      .k {
+        background: var(--sf);
+        border: 2px solid var(--ink);
+        border-radius: 18px;
+        box-shadow: 5px 5px 0 var(--sh);
+        padding: 16px;
+      }
+      .k[hidden] {
+        display: none;
+      }
+      svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 2px solid var(--ink);
+        border-radius: 12px;
+        background: #bfe3f2;
+      }
+      .sky {
+        fill: var(--sky, #bfe3f2);
+        transition: fill 0.6s;
+      }
+      .pin circle {
+        fill: var(--hot);
+        stroke: #fff;
+        stroke-width: 2;
+        cursor: pointer;
+        animation: pu 1.4s infinite;
+      }
+      .pin text {
+        fill: #fff;
+        font: 700 13px system-ui;
+        pointer-events: none;
+      }
+      .pin.on circle {
+        fill: var(--tl);
+        animation: none;
+      }
+      .pin:focus {
+        outline: none;
+      }
+      .pin:focus circle {
+        stroke: var(--ink);
+        stroke-width: 4;
+      }
+      @keyframes pu {
+        50% {
+          stroke-width: 6;
+        }
+      }
+      .yr {
+        font:
+          700 clamp(54px, 14vw, 84px)/1 Georgia,
+          serif;
+        color: var(--ac);
+        margin: 14px 0 0;
+      }
+      .tt {
+        font-weight: 700;
+        font-size: 20px;
+        margin: 0 0 6px;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--hot);
+        margin: 10px 0;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .em {
+        display: flex;
+        gap: 10px;
+        font-size: 44px;
+        min-height: 60px;
+        margin: 12px 0;
+      }
+      .em span {
+        display: inline-block;
+        animation: bo 1.2s ease-in-out infinite;
+      }
+      .em span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .em span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes bo {
+        50% {
+          transform: translateY(-10px) rotate(-6deg);
+        }
+      }
+      .tx {
+        color: var(--mu);
+        margin: 0;
+      }
+      .q {
+        font-size: 21px;
+        font-weight: 700;
+        margin: 12px 0;
+        min-height: 80px;
+      }
+      .ch {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .ch .b {
+        font-size: 18px;
+        padding: 16px 8px;
+      }
+      .ch .b:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .fb {
+        margin: 14px 0;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 2px solid var(--ink);
+        background: var(--bg);
+      }
+      .sc {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+        color: var(--mu);
+      }
+      .big {
+        font-size: 60px;
+        margin: 0;
+        line-height: 1.1;
+      }
+      .ts {
+        position: fixed;
+        left: 50%;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+        transform: translateX(-50%);
+        background: var(--ink);
+        color: var(--bg);
+        padding: 12px 20px;
+        border-radius: 99px;
+        font-weight: 700;
+        z-index: 9;
+        animation: up 0.4s;
+      }
+      .ts[hidden] {
+        display: none;
+      }
+      @keyframes up {
+        from {
+          transform: translate(-50%, 30px);
+          opacity: 0;
+        }
+      }
+      footer {
+        margin-top: 24px;
+        font-size: 13px;
+        color: var(--mu);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="w">
+      <h1>Palma <i>viva</i></h1>
+      <p class="sub">
+        Painel interativo · UCSal 65 anos · Convento e Igreja de Nossa Senhora
+        da Palma
+      </p>
+      <div class="bd" id="bd"></div>
+      <div class="tabs" id="tabs" role="tablist"></div>
+
+      <section class="k" id="p0">
+        <div id="sv0"></div>
+        <div class="yr" id="yr"></div>
+        <p class="tt" id="tt"></p>
+        <input
+          type="range"
+          id="sl"
+          min="0"
+          max="10"
+          value="0"
+          aria-label="Linha do tempo"
+        />
+        <div class="row">
+          <button class="b" id="pv">◀</button
+          ><button class="b" id="pl">▶ Tocar viagem</button
+          ><button class="b" id="nx">▶</button>
+        </div>
+        <div class="em" id="em" aria-hidden="true"></div>
+        <p class="tx" id="tx"></p>
+      </section>
+
+      <section class="k" id="p1" hidden>
+        <div id="sv1"></div>
+        <div class="fb" id="ix">
+          <b>Toque nos pontos numerados</b> para descobrir os segredos da
+          fachada.
+        </div>
+        <div class="sc"><span id="ct">0/6 descobertos</span></div>
+      </section>
+
+      <section class="k" id="p2" hidden><div id="gm"></div></section>
+
+      <footer>
+        Baseado no trabalho “UCSAL 65 anos: memória, patrimônio, espaço e
+        qualidade de vida”, de Caíque G. M. Pithon e Elisangela C. Dantas
+        (Núcleo de Extensão, UCSal, outubro de 2026). Ilustração esquemática,
+        sem escala.
+      </footer>
+    </div>
+    <div class="ts" id="ts" hidden></div>
+
+    <script>
+      const $ = (s) => document.querySelector(s),
+        $$ = (s) => [...document.querySelectorAll(s)];
+      const svg = (
+        pins,
+        sign,
+      ) => `<svg viewBox="0 0 400 250" role="img" aria-label="Fachada ilustrada da Igreja e Convento da Palma">
+<rect class="sky" width="400" height="250"/><rect y="226" width="400" height="24" fill="#8a7a5b"/>
+<rect x="8" y="110" width="190" height="116" fill="#f3ecdc" stroke="#6b5a3c" stroke-width="2"/>
+<polygon points="2,112 204,112 190,96 18,96" fill="#c8553d"/>
+${[0, 1, 2, 3, 4].map((i) => `<rect x="${22 + i * 34}" y="126" width="15" height="24" fill="#3d7a5a"/><rect x="${22 + i * 34}" y="172" width="15" height="24" fill="#3d7a5a"/>`).join("")}
+<rect x="188" y="96" width="138" height="130" fill="#fbf5e4" stroke="#6b5a3c" stroke-width="2"/>
+<path d="M188 98Q222 68 257 80Q292 68 326 98Z" fill="#fbf5e4" stroke="#6b5a3c" stroke-width="2"/>
+<ellipse cx="254" cy="108" rx="9" ry="11" fill="#3d7a5a" stroke="#d9a441" stroke-width="2"/>
+${[0, 1, 2].map((i) => `<path d="M${201 + i * 30} 170V148a9 9 0 0 1 18 0V170Z" fill="#3d7a5a"/><path d="M${198 + i * 30} 226V196a12 12 0 0 1 24 0V226Z" fill="#2f6b57" stroke="#d9a441" stroke-width="3"/>`).join("")}
+<rect x="290" y="56" width="52" height="170" fill="#fbf5e4" stroke="#6b5a3c" stroke-width="2"/>
+<polygon points="288,58 316,20 344,58" fill="#c8553d"/><path d="M316 20V6M310 11h12" stroke="#6b5a3c" stroke-width="3"/>
+<path d="M308 130v-16a8 8 0 0 1 16 0v16z" fill="#3d7a5a"/>
+${sign ? `<rect x="14" y="52" width="162" height="34" rx="7" fill="#231d2e"/><text id="sg" x="95" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#ffd98a" font-family="system-ui"></text>` : ""}
+${pins ? PI.map((p, i) => `<g class="pin" tabindex="0" role="button" aria-label="${p[0]}" data-i="${i}" transform="translate(${p[1]},${p[2]})"><circle r="12"/><text y="5" text-anchor="middle">${i + 1}</text></g>`).join("") : ""}
+</svg>`;
+
+      /* Viagem no tempo */
+      const ST = [
+        [
+          1630,
+          "Conveto da Palma",
+          ["🛡️", "⛪"],
+          "#d9b98a",
+          "A igreja começa a ser erguida num morro que serviu de defesa nos conflitos contra os holandeses.",
+          "Convento da Palma",
+        ],
+        [
+          1693,
+          "Frades no convento",
+          ["📿", "🕯️"],
+          "#e6c9a0",
+          "O convento, iniciado em 1670, é doado aos frades agostinianos descalços, que o ampliam para abrigar missionários.",
+          "Frades Agostinianos",
+        ],
+        [
+          1834,
+          "Seminário e Liceu",
+          ["📖", "🎒"],
+          "#a9d2e8",
+          "O prédio sedia o Seminário da Bahia (1834–1837) e atividades do Liceu Provincial.",
+          "Seminário e Liceu",
+        ],
+        [
+          1933,
+          "O Fórum da cidade",
+          ["⚖️", "📜"],
+          "#b7c4e0",
+          "Por anos, o convento foi o Fórum da Comarca de Salvador. Em 1933, o Estado doa o imóvel à Prefeitura.",
+          "Fórum da Comarca",
+        ],
+        [
+          1938,
+          "Patrimônio nacional",
+          ["🏛️", "⭐"],
+          "#c6e2ef",
+          "O IPHAN tomba a igreja. Dez anos depois, 27 telas seriam restauradas.",
+          "Patrimônio IPHAN",
+        ],
+        [
+          1954,
+          "Chega a Filosofia",
+          ["🎓", "📚"],
+          "#9fd8f0",
+          "Após obras de estabilização, a Faculdade Católica de Filosofia se instala no convento.",
+          "Fac. de Filosofia",
+        ],
+        [
+          1961,
+          "Nasce a UCSal",
+          ["🎉", "🎓", "🏫"],
+          "#8fd0f5",
+          "A universidade reúne faculdades católicas isoladas e começa a funcionar na Palma, seu berço acadêmico.",
+          "UCSal 1961",
+        ],
+        [
+          1972,
+          "Ciclo Básico",
+          ["✏️", "🧭"],
+          "#ffd7a0",
+          "Porta de entrada de muitos calouros: uma etapa de formação geral para ajudar na escolha da carreira.",
+          "Ciclo Básico UCSal",
+        ],
+        [
+          1986,
+          "Alerta no entorno",
+          ["⚠️", "📰"],
+          "#8c8aa8",
+          "O jornal A Tarde noticia assaltos contra alunos do Instituto de Letras. Muitos temem ir às aulas de manhã.",
+          "Instituto de Letras",
+        ],
+        [
+          1999,
+          "Reitoria",
+          ["💼", "🖥️", "📁"],
+          "#a8d8f0",
+          "Com as aulas em outros campi, o convento é reformado e vira sede da Reitoria e das Pró-Reitorias.",
+          "Reitoria da UCSal",
+        ],
+        [
+          2018,
+          "Novo capítulo",
+          ["🧓", "🎨", "🎶"],
+          "#f6c9a4",
+          "Em 5 de novembro, a gestão passa à Fraternidade Samaritanos Beneditinos: lar de idosos e equipes de restauro.",
+          "Lar Sênior Residence",
+        ],
+      ];
+      const got = {},
+        BD = [
+          ["⏳", "Viajante do tempo"],
+          ["🔎", "Explorador"],
+          ["🏆", "Mestre da Palma"],
+        ];
+      const bd = () =>
+        ($("#bd").innerHTML = BD.map(
+          (b, i) =>
+            `<span class="${got[i] ? "" : "off"}">${b[0]} ${b[1]}</span>`,
+        ).join(""));
+      function win(i) {
+        if (got[i]) return;
+        got[i] = 1;
+        bd();
+        const t = $("#ts");
+        t.textContent = `${BD[i][0]} Conquista: ${BD[i][1]}!`;
+        t.hidden = false;
+        setTimeout(() => (t.hidden = true), 2800);
+      }
+      let tm;
+      function rt(i) {
+        const s = ST[i];
+        $("#sv0").firstChild.style.setProperty("--sky", s[3]);
+        $("#sg").textContent = s[5];
+        $("#yr").textContent = s[0];
+        $("#tt").textContent = s[1];
+        $("#sl").value = i;
+        $("#em").innerHTML = s[2].map((e) => `<span>${e}</span>`).join("");
+        $("#tx").textContent = s[4];
+        if (i == 10) win(0);
+      }
+      const go = (d) => rt(Math.max(0, Math.min(10, +$("#sl").value + d)));
+      $("#sv0").innerHTML = svg(0, 1);
+      $("#sl").oninput = (e) => rt(+e.target.value);
+      $("#pv").onclick = () => go(-1);
+      $("#nx").onclick = () => go(1);
+      $("#pl").onclick = () => {
+        if (tm) {
+          clearInterval(tm);
+          tm = 0;
+          $("#pl").textContent = "▶ Tocar viagem";
+          return;
+        }
+        if (+$("#sl").value >= 10) rt(0);
+        $("#pl").textContent = "⏸ Pausar";
+        tm = setInterval(() => {
+          if (+$("#sl").value >= 10) {
+            clearInterval(tm);
+            tm = 0;
+            $("#pl").textContent = "▶ Tocar viagem";
+          } else go(1);
+        }, 2600);
+      };
+      rt(0);
+
+      /* Explorar */
+      const PI = [
+        [
+          "Torre",
+          316,
+          70,
+          "Torre piramidal",
+          "A torre termina em forma de pirâmide. Davi Bernardo, do Colégio de Aplicação, subia as escadas dela com os irmãos para ver as filmagens de “Dona Flor e Seus Dois Maridos” no largo.",
+        ],
+        [
+          "Portas",
+          240,
+          206,
+          "Três portas rococó",
+          "A fachada tem três vãos de entrada com portas de estilo rococó. A construção usa pedras de arenito nas portas.",
+        ],
+        [
+          "Frontão",
+          257,
+          88,
+          "Fachada tombada",
+          "A igreja começou a ser erguida em 1630 e foi tombada pelo IPHAN em 1938. A fachada traz elementos do estilo rococó.",
+        ],
+        [
+          "Janelas",
+          88,
+          161,
+          "Paredes grossas, janelas de madeira",
+          "O convento é de alvenaria pesada, com peitoris de madeira. As paredes espessas dificultavam a climatização das salas.",
+        ],
+        [
+          "Interior",
+          255,
+          134,
+          "Por dentro da igreja",
+          "Planta em “T”, com cerca de 20 m por 8 m. O interior faz a transição entre o rococó e o neoclássico, com pintura barroca no teto.",
+        ],
+        [
+          "Claustro",
+          60,
+          212,
+          "Claustro e escadas",
+          "Um pátio interno retangular irregular, com corredores em dois pavimentos e escadas revestidas de mármore. Não havia rampas nem elevadores.",
+        ],
+      ];
+      const seen = new Set();
+      $("#sv1").innerHTML = svg(1, 0);
+      $$(".pin").forEach((g) => {
+        const f = () => {
+          const p = PI[+g.dataset.i];
+          g.classList.add("on");
+          seen.add(g.dataset.i);
+          $("#ix").innerHTML = `<b>${p[3]}</b><br>${p[4]}`;
+          $("#ct").textContent = `${seen.size}/6 descobertos`;
+          if (seen.size == 6) win(1);
+        };
+        g.onclick = f;
+        g.onkeydown = (e) => {
+          if (e.key == "Enter" || e.key == " ") {
+            e.preventDefault();
+            f();
+          }
+        };
+      });
+
+      /* Jogo */
+      const Q = [
+        [
+          "Os pisos de madeira balançavam e borravam os desenhos nas pranchetas.",
+          "P",
+          "Relato de Marcello Medeiros sobre as aulas de Produção Gráfica.",
+        ],
+        [
+          "Tem videomonitoramento, restaurante universitário e estacionamentos no mesmo complexo.",
+          "T",
+          "Pituaçu concentra os serviços num campus fechado.",
+        ],
+        [
+          "Já abrigou o Fórum da Comarca de Salvador.",
+          "P",
+          "O Fórum funcionou no convento até o começo de 1933.",
+        ],
+        [
+          "Tem uma trilha ecológica em área de Mata Atlântica.",
+          "T",
+          "A trilha é uma das iniciativas de sustentabilidade de Pituaçu.",
+        ],
+        [
+          "Foi tombada pelo IPHAN em 1938.",
+          "P",
+          "A Igreja da Palma é patrimônio histórico e artístico nacional.",
+        ],
+        [
+          "Salas climatizadas e iluminação natural por janelas amplas.",
+          "T",
+          "Na Palma, as paredes espessas dificultavam a climatização.",
+        ],
+        [
+          "Um estudante de Letras Clássicas chegou a morar no prédio.",
+          "P",
+          "Antônio Rubens Soares Chagas residiu no convento durante o curso.",
+        ],
+        [
+          "Crianças subiam a torre para ver filmagens de “Dona Flor e Seus Dois Maridos”.",
+          "P",
+          "Memória de Davi Bernardo, do Colégio de Aplicação.",
+        ],
+        [
+          "Tem rampas e pisos táteis, afim de auxiliar deficientes visuais e motores.",
+          "T",
+          "Na Palma, nenhuma reforma foi voltada à mobilidade.",
+        ],
+        [
+          "Foi o berço acadêmico da UCSal, em 1961.",
+          "P",
+          "Os primeiros cursos da universidade foram distribuídos na Palma.",
+        ],
+      ];
+      let qs, qi, sc, sk;
+      const gm = (h) => ($("#gm").innerHTML = h);
+      function start() {
+        qs = [...Q].sort(() => Math.random() - 0.5).slice(0, 8);
+        qi = sc = sk = 0;
+        ask();
+      }
+      function ask() {
+        if (qi >= 8) return fim();
+        const q = qs[qi];
+        gm(`<div class="sc"><span>Pergunta ${qi + 1}/8</span><span>⭐ ${sc} · 🔥 ${sk}</span></div><p class="q">${q[0]}</p>
+ <div class="ch"><button class="b" data-a="P">🏛️ Palma</button><button class="b" data-a="T">🎓 Pituaçu</button></div><div id="rs"></div>`);
+        $$(".ch .b").forEach((b) => (b.onclick = () => res(b.dataset.a)));
+      }
+      function res(a) {
+        const q = qs[qi],
+          ok = a == q[1];
+        ok ? (sc++, sk++) : (sk = 0);
+        $$(".ch .b").forEach((b) => (b.disabled = true));
+        $("#rs").innerHTML =
+          `<div class="fb">${ok ? "✅ Acertou!" : "❌ Quase!"} É <b>${q[1] == "P" ? "Palma" : "Pituaçu"}</b>. ${q[2]}</div><button class="b" id="nq">${qi == 7 ? "Ver resultado" : "Próxima"}</button>`;
+        $("#nq").onclick = () => {
+          qi++;
+          ask();
+        };
+      }
+      function fim() {
+        const r =
+          sc >= 7
+            ? ["🏛️", "Guardião da Palma"]
+            : sc >= 5
+              ? ["🧭", "Explorador do campus"]
+              : ["🎒", "Calouro curioso"];
+        gm(
+          `<p class="big">${r[0]}</p><p class="tt">${r[1]}</p><p class="tx">Você fez ${sc} de 8 pontos.</p><p><button class="b" id="rj">Jogar de novo</button></p>`,
+        );
+        $("#rj").onclick = start;
+        if (sc >= 7) win(2);
+      }
+      start();
+
+      /* Abas */
+      const TB = [
+        "⏳ Viagem no tempo",
+        "🔎 Explore o prédio",
+        "🎮 Palma ou Pituaçu?",
+      ];
+      $("#tabs").innerHTML = TB.map(
+        (t, i) =>
+          `<button class="b" role="tab" aria-selected="${i == 0}" data-i="${i}">${t}</button>`,
+      ).join("");
+      $$("#tabs .b").forEach(
+        (b) =>
+          (b.onclick = () => {
+            const n = +b.dataset.i;
+            $$("#tabs .b").forEach((x) =>
+              x.setAttribute("aria-selected", x == b),
+            );
+            [0, 1, 2].forEach((i) => ($("#p" + i).hidden = i != n));
+          }),
+      );
+      bd();
+    </script>
+  </body>
+</html>
